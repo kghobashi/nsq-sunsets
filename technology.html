@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>SUNSETS — Technology</title>
+<meta name="description" content="Sunsets technology architecture, pilot stack, sourcing priorities and development roadmap.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C8872A;
+  --gold-light: #F0B84A;
+  --cream: #F4EDD6;
+  --charcoal: #0E0C0A;
+  --dark: #141210;
+  --mid: #1C1814;
+  --deep: #080604;
+  --dim: rgba(244,237,214,0.42);
+  --mid-text: rgba(244,237,214,0.72);
+  /* Status colours */
+  --ready: #5CA86A;
+  --partial: #D4A020;
+  --needed: #C04040;
+  --planned: #4A80B4;
+  --ready-bg: rgba(92,168,106,0.1);
+  --partial-bg: rgba(212,160,32,0.1);
+  --needed-bg: rgba(192,64,64,0.1);
+  --planned-bg: rgba(74,128,180,0.1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--charcoal); color: var(--cream); font-family: 'Montserrat', sans-serif; font-weight: 300; overflow-x: hidden; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--gold); }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 56px;
+  background: rgba(8,6,4,0.97);
+  border-bottom: 1px solid rgba(200,135,42,0.1);
+}
+.nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); text-decoration: none; }
+.nav-right { display: flex; align-items: center; gap: 32px; }
+.nav-links { display: flex; gap: 24px; list-style: none; }
+.nav-links a { font-size:12px; letter-spacing: 3px; text-transform: uppercase; color: var(--dim); text-decoration: none; transition: color 0.3s; }
+.nav-links a:hover { color: var(--gold); }
+.nav-back { font-size:12px; letter-spacing: 3px; text-transform: uppercase; color: rgba(200,135,42,0.4); text-decoration: none; border-left: 1px solid rgba(200,135,42,0.18); padding-left: 24px; transition: color 0.3s; }
+.nav-back:hover { color: var(--gold); }
+
+/* ── PROGRESS ── */
+.progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--planned), var(--ready)); z-index: 200; width: 0%; transition: width 0.2s; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 60vh;
+  padding: 10rem 6rem 5rem;
+  background: var(--deep);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-bottom: 1px solid rgba(200,135,42,0.12);
+}
+#hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 50%, rgba(74,128,180,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 20% 70%, rgba(200,135,42,0.05) 0%, transparent 55%);
+}
+/* Subtle grid pattern */
+#hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(200,135,42,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(200,135,42,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, transparent 30%, black 80%);
+}
+.hero-inner { position: relative; z-index: 2; }
+.hero-tag { font-size:0.75rem; letter-spacing: 0.45em; text-transform: uppercase; color: var(--planned); margin-bottom: 1.6rem; font-family: 'JetBrains Mono', monospace; }
+.hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 8vw, 7.5rem); font-weight: 300; line-height: 0.92; color: var(--cream); margin-bottom: 1.5rem; }
+.hero-title em { font-style: italic; color: var(--gold-light); }
+.hero-body { font-size: 0.82rem; line-height: 2; color: var(--mid-text); max-width: 600px; margin-bottom: 3rem; }
+/* Status legend */
+.legend {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.legend-item { display: flex; align-items: center; gap: 0.6rem; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.legend-dot.ready { background: var(--ready); }
+.legend-dot.partial { background: var(--partial); }
+.legend-dot.needed { background: var(--needed); }
+.legend-dot.planned { background: var(--planned); }
+.legend-label { font-size:0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+
+/* ── SECTION BASE ── */
+section { padding: 7rem 6rem; position: relative; overflow: hidden; }
+.section-label { font-size:0.75rem; letter-spacing: 0.42em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace; }
+.section-heading { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 4.5vw, 4rem); font-weight: 300; line-height: 1.1; color: var(--cream); margin-bottom: 0.8rem; }
+.section-heading em { font-style: italic; color: var(--gold-light); }
+.section-intro { font-size: 0.8rem; line-height: 2; color: var(--mid-text); max-width: 640px; margin-bottom: 3.5rem; }
+
+/* ── STATUS BADGE ── */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 0;
+  font-size:0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+.status::before { content: ''; display: block; width: 5px; height: 5px; border-radius: 50%; }
+.status.ready { color: var(--ready); background: var(--ready-bg); }
+.status.ready::before { background: var(--ready); }
+.status.partial { color: var(--partial); background: var(--partial-bg); }
+.status.partial::before { background: var(--partial); }
+.status.needed { color: var(--needed); background: var(--needed-bg); }
+.status.needed::before { background: var(--needed); }
+.status.planned { color: var(--planned); background: var(--planned-bg); }
+.status.planned::before { background: var(--planned); }
+
+/* ── SYSTEM OVERVIEW ── */
+#overview { background: var(--dark); }
+.systems-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: rgba(200,135,42,0.1); }
+.system-card { background: var(--dark); padding: 2.5rem 2rem; transition: background 0.3s; }
+.system-card:hover { background: var(--mid); }
+.system-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; }
+.system-icon { font-size: 1.8rem; }
+.system-name { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--cream); margin-bottom: 0.3rem; }
+.system-sub { font-size:0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+.system-desc { font-size: 0.76rem; line-height: 1.9; color: var(--mid-text); margin-bottom: 1.2rem; }
+.system-specs { display: flex; flex-direction: column; gap: 0.5rem; }
+.spec-line { display: flex; gap: 0.8rem; align-items: center; font-size:0.75rem; color: var(--dim); font-family: 'JetBrains Mono', monospace; }
+.spec-line::before { content: '›'; color: var(--gold); flex-shrink: 0; }
+
+/* ── STACK DETAIL ── */
+#stack { background: var(--charcoal); }
+.stack-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+.stack-col-head { font-size:0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(200,135,42,0.2); font-family: 'JetBrains Mono', monospace; }
+.stack-rows { display: flex; flex-direction: column; gap: 1px; }
+.stack-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1.2fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.2rem;
+  background: var(--dark);
+  border: 1px solid rgba(255,255,255,0.03);
+  transition: background 0.3s;
+}
+.stack-row:hover { background: var(--mid); }
+.stack-component { }
+.stack-name { font-size: 0.76rem; color: var(--cream); margin-bottom: 0.2rem; }
+.stack-vendor { font-size:0.75rem; color: var(--dim); font-family: 'JetBrains Mono', monospace; }
+.stack-phase { font-size:0.75rem; letter-spacing: 0.15em; color: var(--dim); text-transform: uppercase; white-space: nowrap; }
+
+/* ── GAP ANALYSIS ── */
+#gaps { background: var(--dark); }
+#gaps::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+
+.gap-table { border: 1px solid rgba(200,135,42,0.12); overflow: hidden; }
+.gap-head {
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr 1fr 0.8fr 2fr;
+  padding: 0.9rem 1.5rem;
+  background: rgba(200,135,42,0.08);
+}
+.gap-head span { font-size:0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: 'JetBrains Mono', monospace; }
+.gap-row {
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr 1fr 0.8fr 2fr;
+  align-items: center;
+  padding: 1.2rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  gap: 0.5rem;
+  transition: background 0.3s;
+}
+.gap-row:hover { background: rgba(200,135,42,0.03); }
+.gap-component { font-size: 0.78rem; color: var(--cream); }
+.gap-category { font-size:0.75rem; color: var(--dim); font-family: 'JetBrains Mono', monospace; }
+.gap-phase { font-size:0.75rem; color: var(--mid-text); }
+.gap-effort { font-size:0.75rem; color: var(--dim); }
+.gap-note { font-size:0.75rem; color: var(--dim); line-height: 1.5; }
+
+/* ── PHASE COMPARISON ── */
+#phases { background: var(--charcoal); }
+.phases-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(200,135,42,0.1); }
+.phase-panel { background: var(--charcoal); padding: 3rem 2.5rem; }
+.phase-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+.phase-badge-num { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; line-height: 1; color: rgba(200,135,42,0.25); }
+.phase-badge-text { }
+.phase-badge-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--cream); }
+.phase-badge-sub { font-size:0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+.phase-divider { height: 1px; background: rgba(200,135,42,0.15); margin-bottom: 1.5rem; }
+.phase-tech-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
+.phase-tech-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.02); }
+.pti-icon { font-size: 1rem; flex-shrink: 0; width: 1.5rem; text-align: center; }
+.pti-name { font-size:0.75rem; color: var(--cream); flex: 1; }
+.phase-cost { margin-top: 1.5rem; padding: 1.2rem; background: rgba(200,135,42,0.06); border: 1px solid rgba(200,135,42,0.15); display: flex; justify-content: space-between; align-items: center; }
+.phase-cost-label { font-size:0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+.phase-cost-val { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--gold-light); }
+
+/* ── DEVELOPMENT ROADMAP ── */
+#roadmap { background: var(--dark); }
+.roadmap-track { position: relative; padding-left: 3rem; }
+.roadmap-track::before { content: ''; position: absolute; left: 0.7rem; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--gold), rgba(200,135,42,0.1)); }
+.roadmap-item { position: relative; margin-bottom: 3rem; }
+.roadmap-item:last-child { margin-bottom: 0; }
+.roadmap-dot { position: absolute; left: -2.56rem; top: 0.15rem; width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--gold); background: var(--dark); }
+.roadmap-dot.active { background: var(--gold); box-shadow: 0 0 12px rgba(200,135,42,0.5); }
+.roadmap-meta { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.6rem; }
+.roadmap-phase { font-size:0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-family: 'JetBrains Mono', monospace; }
+.roadmap-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--cream); margin-bottom: 0.5rem; }
+.roadmap-desc { font-size: 0.76rem; line-height: 1.9; color: var(--mid-text); max-width: 600px; margin-bottom: 1rem; }
+.roadmap-tasks { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.roadmap-task {
+  padding: 0.3rem 0.9rem;
+  border: 1px solid rgba(200,135,42,0.2);
+  font-size:0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--dim);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+
+/* ── PROTOTYPE SOURCING ── */
+#sourcing { background: var(--charcoal); }
+.sourcing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(200,135,42,0.1); margin-top:3rem; }
+.sourcing-card { background:var(--charcoal); padding:2rem; }
+.sourcing-card h3 { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:300; color:var(--cream); margin-bottom:.7rem; }
+.sourcing-card p { font-size:0.75rem; line-height:1.8; color:var(--mid-text); }
+@media (max-width:900px){ .sourcing-grid{grid-template-columns:1fr;} }
+
+/* ── OPEN QUESTIONS ── */
+#open-questions { background: var(--charcoal); }
+.questions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(200,135,42,0.08); margin-top: 3rem; }
+.q-card { background: var(--charcoal); padding: 2rem 2rem; border: 1px solid rgba(200,135,42,0.06); transition: background 0.3s; }
+.q-card:hover { background: var(--dark); }
+.q-priority { font-size:0.75rem; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 0.6rem; font-family: 'JetBrains Mono', monospace; }
+.q-priority.high { color: var(--needed); }
+.q-priority.medium { color: var(--partial); }
+.q-priority.low { color: var(--planned); }
+.q-text { font-size: 0.82rem; color: var(--cream); line-height: 1.6; margin-bottom: 0.6rem; }
+.q-context { font-size:0.75rem; color: var(--dim); line-height: 1.7; }
+
+/* ── REVEAL ── */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.85s ease, transform 0.85s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.rd1 { transition-delay: 0.08s; } .rd2 { transition-delay: 0.18s; } .rd3 { transition-delay: 0.3s; } .rd4 { transition-delay: 0.44s; }
+
+/* ── FOOTER ── */
+footer { background: var(--deep); border-top: 1px solid rgba(200,135,42,0.12); padding: 2.5rem 6rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-light); text-decoration: none; }
+.footer-nav { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.footer-nav a { font-size:0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); text-decoration: none; transition: color 0.3s; }
+.footer-nav a:hover { color: var(--gold); }
+.footer-meta { font-size:0.75rem; color: var(--dim); text-align: right; line-height: 1.8; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  section, #hero { padding: 5rem 1.5rem; }
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .systems-grid,.stack-columns,.phases-split,.questions-grid { grid-template-columns: 1fr; }
+  .gap-head,.gap-row { grid-template-columns: 1.5fr 1fr auto; }
+  .gap-head span:nth-child(4),.gap-head span:nth-child(5),.gap-row .gap-effort,.gap-row .gap-note { display: none; }
+  footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+  .footer-meta { text-align: center; }
+}
+
+/* ===== SUNSETS BRAND SYSTEM v1.4 ===== */
+@font-face{font-family:'POINA';src:url('assets/fonts/POINA.woff2') format('woff2'),url('assets/fonts/POINA.woff') format('woff'),local('POINA'),local('Poina'),local('Poina-Regular');font-weight:400;font-style:normal;font-display:swap}
+:root{--gold:#D78E4F!important;--gold-light:#F0BA83!important;--cream:#EEF2F4!important;--charcoal:#07131F!important;--dark:#081522!important;--mid:#0E2132!important;--deep:#050D14!important;--dim:rgba(238,242,244,.48)!important;--mid-text:rgba(238,242,244,.72)!important;--blue:#648AA7!important;--orange:#BD6D63!important}
+html{font-size:16px!important}
+body{font-family:'Montserrat',sans-serif!important;font-size:14px!important;background:#07131F!important;color:#EEF2F4!important}
+body *{font-style:normal!important}
+.hero-title,.section-heading,.investment-heading,.contact-heading,.thesis-title,.market-context-heading,.funnel-val,.fin-val,.scenario-mult,.nav-logo,.footer-logo,.phase-badge-title,.system-name,.roadmap-title{font-family:'POINA','Montserrat',sans-serif!important;text-transform:uppercase!important;font-style:normal!important;font-feature-settings:'liga' 1,'calt' 1,'ss01' 1!important;letter-spacing:.045em!important}
+nav{height:74px!important;padding:0 clamp(20px,4vw,64px)!important;background:rgba(7,19,31,.96)!important;backdrop-filter:blur(16px)!important;border-bottom:1px solid rgba(238,242,244,.08)!important}
+.nav-logo{font-size:22px!important;letter-spacing:.12em!important;color:#EEF2F4!important;white-space:nowrap!important}
+.nav-right{gap:28px!important}.nav-links{gap:24px!important}.nav-links a,.nav-back{font-family:'Montserrat',sans-serif!important;font-size:12px!important;letter-spacing:.16em!important;color:rgba(238,242,244,.58)!important}.nav-links a:hover,.nav-back:hover{color:#F0BA83!important}
+.hero-tag,.section-label,.confidential-badge,.legend-label,.stack-col-head,.status,.roadmap-phase,.q-priority,.contact-label,.footer-nav a,.footer-meta{font-size:12px!important}
+.hero-body,.section-intro,.thesis-body,.market-context-body,.trend-text,.fin-intro,.fund-detail,.investment-body,.scenario-detail,.why-body,.contact-body,.system-desc,.roadmap-desc,.q-context,.gap-note{font-size:14px!important;line-height:1.85!important}
+.hero-title em,.section-heading em,.investment-heading em,.contact-heading em{color:#F0BA83!important;font-style:normal!important}
+.progress-bar{background:linear-gradient(90deg,#648AA7,#D78E4F,#F0BA83)!important}
+.btn-gold{font-size:12px!important;border-color:#D78E4F!important;color:#F0BA83!important}.btn-gold:hover{background:rgba(216,132,58,.12)!important}
+@media(max-width:900px){nav{height:auto!important;min-height:66px!important}.nav-right{gap:14px!important}.nav-links{display:none!important}.nav-back{font-size:12px!important}}
+
+
+/* v3.1 technology readability pass */
+:root{
+  --gold:#D28A50!important;--gold-light:#E9B77E!important;--cream:#EEF1F3!important;
+  --charcoal:#07131F!important;--dark:#0B1B29!important;--mid:#112638!important;--deep:#050C13!important;
+  --dim:rgba(238,241,243,.56)!important;--mid-text:rgba(238,241,243,.82)!important;
+}
+body{background:#07131F!important;color:#EEF1F3!important}
+.hero-title{font-weight:400!important;line-height:.94!important}
+.hero-title .whats{color:#EEF1F3!important}.hero-title .rest{color:#D28A50!important}
+.hero-body,.section-intro,.system-desc,.stack-name,.stack-vendor,.stack-phase,.gap-component,.gap-category,.gap-phase,.gap-effort,.gap-note,.roadmap-desc,.q-text,.q-context,.sourcing-card p{color:#EEF1F3!important}
+.section-label,.roadmap-phase,.stack-col-head{color:#D28A50!important;opacity:1!important}
+.system-card,.stack-row,.gap-table,.phase-panel,.sourcing-card,.q-card{background:rgba(210,138,80,.07)!important;border-color:rgba(210,138,80,.16)!important}
+.system-name,.phase-badge-title,.roadmap-title,.sourcing-card h3{color:#E9B77E!important}
+.phase-badge-num{color:#D28A50!important;opacity:1!important}
+.roadmap-track::before{background:linear-gradient(to bottom,#D28A50,rgba(210,138,80,.18))!important}
+.roadmap-dot{border-color:#D28A50!important}.roadmap-dot.active{background:#D28A50!important;box-shadow:0 0 14px rgba(210,138,80,.55)!important}
+.progress-bar{background:linear-gradient(90deg,#6E91AA,#D28A50,#E9B77E)!important;opacity:1!important}
+.legend-label{color:rgba(238,241,243,.72)!important}
+.footer-logo{color:#E9B77E!important}
+.tech-closing{padding:90px 6rem;background:linear-gradient(180deg,#0B1B29,#07131F);border-top:1px solid rgba(210,138,80,.14)}
+.tech-closing h2{font-family:'POINA','Montserrat',sans-serif;font-size:clamp(2.4rem,5vw,5rem);line-height:.96;font-weight:400;color:#D28A50;margin:0 0 1.2rem;text-transform:uppercase}
+.tech-closing p{max-width:760px;color:#EEF1F3;line-height:1.9;font-size:.9rem}
+@media(max-width:760px){.tech-closing{padding:72px 24px}}
+
+</style>
+<link rel="stylesheet" href="brand.css">
+<style>
+:root{
+  --gold:#D28A50!important;--gold-light:#E9B77E!important;--amber:#D28A50!important;
+  --cream:#EEF1F3!important;--charcoal:#07131F!important;--dark:#07131F!important;
+  --mid:#0B1B29!important;--deep:#040B11!important;--blue:#6E91AA!important;
+  --orange:#A85F58!important;--dim:rgba(238,241,243,.48)!important;--mid-text:rgba(238,241,243,.72)!important;
+}
+html{background:#07131F!important}
+body{background:#07131F!important;color:#EEF1F3!important;font-family:'Montserrat',sans-serif!important}
+body *{font-style:normal!important}
+.hero-title,.section-heading,.investment-heading,.contact-heading,.thesis-title,.market-context-heading,.funnel-val,.fin-val,.scenario-mult,.nav-logo,.footer-logo,.phase-badge-title,.system-name,.roadmap-title{
+  font-family:'POINA','Montserrat',sans-serif!important;text-transform:uppercase!important;letter-spacing:.045em!important;
+  font-feature-settings:'liga' 1,'calt' 1,'ss01' 1!important;
+}
+nav{background:rgba(7,19,31,.92)!important;backdrop-filter:blur(14px)!important;border-bottom:1px solid rgba(238,241,243,.09)!important}
+.nav-logo{color:#EEF1F3!important}
+.nav-links a,.nav-back{color:rgba(238,241,243,.62)!important;font-size:12px!important}
+.nav-links a:hover,.nav-back:hover{color:#E9B77E!important}
+.hero-title em,.section-heading em,.investment-heading em,.contact-heading em{color:#E9B77E!important;font-style:normal!important}
+.progress-bar{background:linear-gradient(90deg,#6E91AA,#D28A50,#E9B77E)!important}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">SUNSETS</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="index.html">Experience</a></li>
+      <li><a href="concept.html">Concept</a></li>
+      <li><a href="technology.html">Technology</a></li>
+      <li><a href="investors.html">Investors</a></li>
+    </ul>
+    <a href="index.html" class="nav-back">Main Site</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-inner">
+    <p class="hero-tag">// technology_overview.md — v1.3 — September 2026</p>
+    <h1 class="hero-title"><span class="whats">WHAT’S</span> <span class="rest">BUILT.</span><br><span class="whats">WHAT’S</span> <span class="rest">NEEDED.</span><br><span class="whats">WHAT’S</span> <span class="rest">NEXT.</span></h1>
+    <p class="hero-body">
+      A complete map of the Sunsets technology stack — hardware, software, content, streaming, and sensory systems. Each component is rated by readiness status. Phase 1 is designed to launch with zero unproven technology. Phase 2 builds the live network.
+    </p>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot ready"></div><span class="legend-label">Ready — commercially available</span></div>
+      <div class="legend-item"><div class="legend-dot partial"></div><span class="legend-label">Partial — available, needs integration</span></div>
+      <div class="legend-item"><div class="legend-dot planned"></div><span class="legend-label">Planned — needs procurement</span></div>
+      <div class="legend-item"><div class="legend-dot needed"></div><span class="legend-label">To Build — custom development required</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SYSTEM OVERVIEW ── -->
+<section id="overview">
+  <p class="section-label reveal">// system_architecture</p>
+  <h2 class="section-heading reveal rd1">Four core<br><em>systems.</em></h2>
+  <p class="section-intro reveal rd2">Sunsets’ technology is organised into four distinct systems. Each operates independently but integrates into a unified experience. Phase 1 relies entirely on commercially available components. The custom build work is Phase 2.</p>
+
+  <div class="systems-grid">
+    <div class="system-card reveal rd1">
+      <div class="system-header">
+        <div>
+          <div class="system-name">Display & Visual</div>
+          <div class="system-sub">System 01</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="system-icon">🖥️</span><br>
+          <span class="status ready">Ready</span>
+        </div>
+      </div>
+      <p class="system-desc">High-definition LED display panels installed within each booth, rendering 4K (Phase 1) to 8K (Phase 2) sunset scenes. Bezel-less configuration creates an immersive window effect. Dynamic overlays show local time, city name, and live conditions.</p>
+      <div class="system-specs">
+        <div class="spec-line">Samsung The Wall / LG DVLED — commercial display solutions</div>
+        <div class="spec-line">Minimum 4K @ 60fps per booth — 8K preferred at scale</div>
+        <div class="spec-line">Bezel-less or floating frame installation</div>
+        <div class="spec-line">Dynamic HDR for sunset colour fidelity</div>
+        <div class="spec-line">Overlay system: city, time, scene countdown</div>
+      </div>
+    </div>
+
+    <div class="system-card reveal rd2">
+      <div class="system-header">
+        <div>
+          <div class="system-name">Content & Streaming</div>
+          <div class="system-sub">System 02</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="system-icon">📡</span><br>
+          <span class="status partial">Partial</span>
+        </div>
+      </div>
+      <p class="system-desc">Phase 1: pre-produced 4K/8K looped content library. Phase 2: live feeds from camera rigs at partner city rooftops, delivered via CDN with low-latency encoding. The scene management dashboard controls which booth shows which scene in real time.</p>
+      <div class="system-specs">
+        <div class="spec-line">Phase 1: Cinematic 4K loops, produced on location per city</div>
+        <div class="spec-line">Phase 2: Live RTMP/SRT feeds, 4K @ 30fps minimum</div>
+        <div class="spec-line">CDN: Cloudflare Stream / AWS IVS for low-latency global delivery</div>
+        <div class="spec-line">Scene CMS: custom dashboard for real-time booth assignment</div>
+        <div class="spec-line">Redundancy: local NVMe playback backup if feed drops</div>
+      </div>
+    </div>
+
+    <div class="system-card reveal rd1">
+      <div class="system-header">
+        <div>
+          <div class="system-name">Multi-Sensory</div>
+          <div class="system-sub">System 03</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="system-icon">🌿</span><br>
+          <span class="status ready">Ready</span>
+        </div>
+      </div>
+      <p class="system-desc">Scent diffusion, directional audio, and atmospheric lighting — the three non-visual sensory layers. All three systems use commercially available professional hardware. The integration layer (synchronising all three to the active scene) requires custom software.</p>
+      <div class="system-specs">
+        <div class="spec-line">Scent: Prolitec / Aromatec diffusion units ($200–$500/booth)</div>
+        <div class="spec-line">Audio: d&b audiotechnik / Bose Pro directional speakers</div>
+        <div class="spec-line">Lighting: Lutron or ETC scene-linked control per booth</div>
+        <div class="spec-line">Sync layer: API bridge between scene CMS and sensory hardware</div>
+        <div class="spec-line">Scent cartridges: 18+ city-specific formulas, supplied centrally</div>
+      </div>
+    </div>
+
+    <div class="system-card reveal rd2">
+      <div class="system-header">
+        <div>
+          <div class="system-name">Operations & Loyalty</div>
+          <div class="system-sub">System 04</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="system-icon">⚙️</span><br>
+          <span class="status needed">To Build</span>
+        </div>
+      </div>
+      <p class="system-desc">Booking system, Sunsets Passport loyalty programme, and the venue management dashboard. Booking integrates with an existing hospitality platform (SevenRooms or ResDiary). The Passport app is bespoke — it's the primary retention and cross-venue engagement tool.</p>
+      <div class="system-specs">
+        <div class="spec-line">Booking: SevenRooms or ResDiary API integration</div>
+        <div class="spec-line">Passport: native iOS/Android app (React Native)</div>
+        <div class="spec-line">Stamp system: NFC or QR per booth, recorded per user</div>
+        <div class="spec-line">Loyalty engine: discount logic, cross-venue passport tracking</div>
+        <div class="spec-line">Venue dashboard: real-time occupancy, scene control, event mode</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TECH STACK ── -->
+<section id="stack">
+  <p class="section-label reveal">// component_registry</p>
+  <h2 class="section-heading reveal rd1">Component<br><em>by component.</em></h2>
+  <p class="section-intro reveal rd2">Every technology component, its vendor or build route, the phase it's required in, and its current readiness status.</p>
+  <div class="stack-columns reveal rd2">
+    <div>
+      <div class="stack-col-head">Hardware</div>
+      <div class="stack-rows">
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">LED Display Panels</div><div class="stack-vendor">Samsung The Wall · LG DVLED</div></div><div class="stack-phase">Phase 1</div><span class="status ready">Ready</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Media Players / GPU</div><div class="stack-vendor">Brightsign · NVIDIA A-series</div></div><div class="stack-phase">Phase 1</div><span class="status ready">Ready</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Scent Diffusers</div><div class="stack-vendor">Prolitec Sphere · Aromatec AM-400</div></div><div class="stack-phase">Phase 1</div><span class="status ready">Ready</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Directional Speakers</div><div class="stack-vendor">d&b audiotechnik · Bose Pro</div></div><div class="stack-phase">Phase 1</div><span class="status ready">Ready</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Lighting Control</div><div class="stack-vendor">Lutron Quantum · ETC</div></div><div class="stack-phase">Phase 1</div><span class="status ready">Ready</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">NFC Stamp Hardware</div><div class="stack-vendor">Impinj · custom enclosure</div></div><div class="stack-phase">Phase 1</div><span class="status partial">Partial</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Camera Rigs (city feeds)</div><div class="stack-vendor">Sony FX9 · PTZ Optics · custom mount</div></div><div class="stack-phase">Phase 2</div><span class="status planned">Planned</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Encoding Hardware</div><div class="stack-vendor">Haivision KB · LiveU LU800</div></div><div class="stack-phase">Phase 2</div><span class="status planned">Planned</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="stack-col-head">Software & Services</div>
+      <div class="stack-rows">
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Content Playback CMS</div><div class="stack-vendor">Brightsign OS · custom wrapper</div></div><div class="stack-phase">Phase 1</div><span class="status partial">Partial</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Scene Management Dashboard</div><div class="stack-vendor">Custom build (React + Node)</div></div><div class="stack-phase">Phase 1</div><span class="status needed">To Build</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Booking System Integration</div><div class="stack-vendor">SevenRooms API · ResDiary</div></div><div class="stack-phase">Phase 1</div><span class="status partial">Partial</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Sunsets Passport App</div><div class="stack-vendor">React Native · custom backend</div></div><div class="stack-phase">Phase 1</div><span class="status needed">To Build</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Sensory Sync API</div><div class="stack-vendor">Custom middleware layer</div></div><div class="stack-phase">Phase 1</div><span class="status needed">To Build</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Live CDN Delivery</div><div class="stack-vendor">Cloudflare Stream · AWS IVS</div></div><div class="stack-phase">Phase 2</div><span class="status planned">Planned</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Live Encoding Pipeline</div><div class="stack-vendor">FFmpeg · custom orchestration</div></div><div class="stack-phase">Phase 2</div><span class="status needed">To Build</span></div>
+        <div class="stack-row"><div class="stack-component"><div class="stack-name">Weather-Adaptive Switching</div><div class="stack-vendor">OpenWeather API · custom trigger logic</div></div><div class="stack-phase">Phase 2</div><span class="status needed">To Build</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── GAP ANALYSIS ── -->
+<section id="gaps">
+  <p class="section-label reveal">// gap_analysis.csv</p>
+  <h2 class="section-heading reveal rd1">Where the<br><em>gaps are.</em></h2>
+  <p class="section-intro reveal rd2">Five components require custom development. Three are Phase 1 requirements (needed before pilot launch). Two are Phase 2 (needed before live network). None are technically novel — all have clear development paths.</p>
+
+  <div class="gap-table reveal rd2">
+    <div class="gap-head">
+      <span>Component</span>
+      <span>Category</span>
+      <span>Phase</span>
+      <span>Effort</span>
+      <span>Notes</span>
+    </div>
+    <div class="gap-row">
+      <div class="gap-component">Scene Management Dashboard</div>
+      <div class="gap-category">software / web</div>
+      <div class="gap-phase">Phase 1</div>
+      <div class="gap-effort"><span class="status partial">Medium</span></div>
+      <div class="gap-note">Real-time booth-to-scene assignment, event mode toggle, playback status. Standard web app — 6–10 weeks build.</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-component">Sunsets Passport App</div>
+      <div class="gap-category">mobile / backend</div>
+      <div class="gap-phase">Phase 1</div>
+      <div class="gap-effort"><span class="status needed">High</span></div>
+      <div class="gap-note">iOS + Android. NFC or QR stamp collection, cross-venue passport, discount engine. 14–20 weeks. Core retention product.</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-component">Sensory Sync Middleware</div>
+      <div class="gap-category">software / API</div>
+      <div class="gap-phase">Phase 1</div>
+      <div class="gap-effort"><span class="status partial">Medium</span></div>
+      <div class="gap-note">API bridge between scene CMS and scent/audio/lighting hardware. Triggers correct profile when scene changes. 4–6 weeks build.</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-component">Live Encoding Pipeline</div>
+      <div class="gap-category">infrastructure / devops</div>
+      <div class="gap-phase">Phase 2</div>
+      <div class="gap-effort"><span class="status needed">High</span></div>
+      <div class="gap-note">Ingests RTMP from city camera rigs, transcodes to adaptive bitrate, pushes to CDN. FFmpeg-based, cloud-native. 10–16 weeks.</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-component">Weather-Adaptive Content Switch</div>
+      <div class="gap-category">software / automation</div>
+      <div class="gap-phase">Phase 2</div>
+      <div class="gap-effort"><span class="status partial">Low</span></div>
+      <div class="gap-note">Monitors weather at each city feed location. Automatically switches to loop backup if live conditions degrade. 2–3 weeks build on top of CMS.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PHASE COMPARISON ── -->
+<section id="phases">
+  <p class="section-label reveal">// phase_diff</p>
+  <h2 class="section-heading reveal rd1">Phase 1 vs<br><em>Phase 2.</em></h2>
+  <div class="phases-split">
+    <div class="phase-panel reveal rd1">
+      <div class="phase-badge">
+        <div class="phase-badge-num">1</div>
+        <div class="phase-badge-text">
+          <div class="phase-badge-title">Dubai Pilot</div>
+          <div class="phase-badge-sub">2026 · Loop-first · No live dependency</div>
+        </div>
+      </div>
+      <div class="phase-divider"></div>
+      <p style="font-size:0.76rem;line-height:1.9;color:var(--mid-text);margin-bottom:1.5rem;">
+        Phase 1 uses no unproven technology. Every component is commercially available or a standard custom build. The entire experience works on looped 4K content — which is indistinguishable from live for 80% of operating hours.
+      </p>
+      <div class="phase-tech-list">
+        <div class="phase-tech-item"><span class="pti-icon">✅</span><span class="pti-name">LED display panels</span><span class="status ready">Ready</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">✅</span><span class="pti-name">Scent diffusion systems</span><span class="status ready">Ready</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">✅</span><span class="pti-name">Directional audio</span><span class="status ready">Ready</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">✅</span><span class="pti-name">Looped 4K content library</span><span class="status partial">Produce</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">🔨</span><span class="pti-name">Scene management dashboard</span><span class="status needed">Build</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">🔨</span><span class="pti-name">Sensory sync middleware</span><span class="status needed">Build</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">🔨</span><span class="pti-name">Sunsets Passport app</span><span class="status needed">Build</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">🔗</span><span class="pti-name">Booking system integration</span><span class="status partial">Integrate</span></div>
+      </div>
+      <div class="phase-cost">
+        <span class="phase-cost-label">Estimated tech capex</span>
+        <span class="phase-cost-val">$180K–$320K</span>
+      </div>
+    </div>
+
+    <div class="phase-panel reveal rd2">
+      <div class="phase-badge">
+        <div class="phase-badge-num">2</div>
+        <div class="phase-badge-text">
+          <div class="phase-badge-title">Live Network</div>
+          <div class="phase-badge-sub">2027+ · Live feeds · Multi-venue</div>
+        </div>
+      </div>
+      <div class="phase-divider"></div>
+      <p style="font-size:0.76rem;line-height:1.9;color:var(--mid-text);margin-bottom:1.5rem;">
+        Phase 2 adds the live streaming layer and scales the network. Camera rigs are installed at partner city rooftops, live feeds are ingested and distributed, and the scene library transitions from loops to real-time. The pilot tech stack is fully reused.
+      </p>
+      <div class="phase-tech-list">
+        <div class="phase-tech-item"><span class="pti-icon">📷</span><span class="pti-name">Camera rigs at city partners</span><span class="status planned">Procure</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">📡</span><span class="pti-name">Live encoding hardware</span><span class="status planned">Procure</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">☁️</span><span class="pti-name">CDN delivery (Cloudflare / AWS)</span><span class="status planned">Procure</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">🔨</span><span class="pti-name">Live encoding pipeline</span><span class="status needed">Build</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">🔨</span><span class="pti-name">Weather-adaptive switching</span><span class="status needed">Build</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">✅</span><span class="pti-name">Scene CMS (Phase 1 extended)</span><span class="status ready">Extend</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">✅</span><span class="pti-name">Passport app (Phase 1 extended)</span><span class="status ready">Extend</span></div>
+        <div class="phase-tech-item"><span class="pti-icon">✅</span><span class="pti-name">Loop fallback system</span><span class="status ready">Reuse</span></div>
+      </div>
+      <div class="phase-cost">
+        <span class="phase-cost-label">Estimated incremental capex</span>
+        <span class="phase-cost-val">$120K–$200K / city</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEVELOPMENT ROADMAP ── -->
+<section id="roadmap">
+  <p class="section-label reveal">// development_roadmap</p>
+  <h2 class="section-heading reveal rd1">The build<br><em>sequence.</em></h2>
+  <p class="section-intro reveal rd2">In order from now to live network. Each phase is a dependency for the next.</p>
+
+  <div class="roadmap-track reveal rd2">
+    <div class="roadmap-item">
+      <div class="roadmap-dot active"></div>
+      <div class="roadmap-meta">
+        <span class="roadmap-phase">Now — Month 0</span>
+        <span class="status needed">Urgent</span>
+      </div>
+      <div class="roadmap-title">Legal & IP Foundation</div>
+      <p class="roadmap-desc">Protect the Sunsets brand name and core identity in priority markets. File concept description as a trade secret. NDA templates ready before any partner pitch. This must happen before the pitch deck is shared with any external party.</p>
+      <div class="roadmap-tasks">
+        <div class="roadmap-task">UAE trademark registration</div>
+        <div class="roadmap-task">UK / EU trademark filing</div>
+        <div class="roadmap-task">NDA templates</div>
+        <div class="roadmap-task">Entity structure (UAQ Free Zone)</div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-meta">
+        <span class="roadmap-phase">Month 1–2</span>
+        <span class="status partial">Design</span>
+      </div>
+      <div class="roadmap-title">Concept Finalisation & Partner Pitch</div>
+      <p class="roadmap-desc">Lock all 10 booth city selections for pilot. Finalise scent formulas per city. Commission booth design renders for pitch deck. Shortlist and approach Dubai flagship rooftop partners formally.</p>
+      <div class="roadmap-tasks">
+        <div class="roadmap-task">Booth design renders</div>
+        <div class="roadmap-task">Scent formula brief</div>
+        <div class="roadmap-task">City library v1.0 locked</div>
+        <div class="roadmap-task">Partner NDA + pilot meeting</div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-meta">
+        <span class="roadmap-phase">Month 2–5</span>
+        <span class="status needed">Build</span>
+      </div>
+      <div class="roadmap-title">Content Production & Core Software</div>
+      <p class="roadmap-desc">Cinematography teams travel to each pilot city to shoot the 4K loop library (golden hour capture windows — 30–90 min per location). Parallel: begin scene management dashboard and sensory sync API builds.</p>
+      <div class="roadmap-tasks">
+        <div class="roadmap-task">4K loop production (10 cities)</div>
+        <div class="roadmap-task">Scene CMS MVP</div>
+        <div class="roadmap-task">Sensory sync API</div>
+        <div class="roadmap-task">Booking integration</div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-meta">
+        <span class="roadmap-phase">Month 4–8</span>
+        <span class="status needed">Build</span>
+      </div>
+      <div class="roadmap-title">Passport App & Venue Installation</div>
+      <p class="roadmap-desc">Sunsets Passport app development (iOS + Android). Hardware procurement and installation at Dubai venue. Full sensory calibration per booth. Soft launch with invite-only guests to validate the experience before public opening.</p>
+      <div class="roadmap-tasks">
+        <div class="roadmap-task">Passport app v1.0</div>
+        <div class="roadmap-task">LED panel installation</div>
+        <div class="roadmap-task">Scent + audio + lighting rig</div>
+        <div class="roadmap-task">Soft launch (invite-only)</div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-meta">
+        <span class="roadmap-phase">Month 8–12</span>
+        <span class="status planned">Launch</span>
+      </div>
+      <div class="roadmap-title">Public Launch & Influencer Campaign</div>
+      <p class="roadmap-desc">Full public launch with influencer activation, press coverage, and social media campaign. Passport stamps go live. Collect operational data for Series A. Begin outreach to Phase 2 city partners.</p>
+      <div class="roadmap-tasks">
+        <div class="roadmap-task">Press launch event</div>
+        <div class="roadmap-task">Influencer campaign</div>
+        <div class="roadmap-task">Passport activation</div>
+        <div class="roadmap-task">Phase 2 partner outreach</div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-meta">
+        <span class="roadmap-phase">Year 2+</span>
+        <span class="status planned">Phase 2</span>
+      </div>
+      <div class="roadmap-title">Live Network Upgrade</div>
+      <p class="roadmap-desc">Camera rigs installed at first partner city rooftops. Live encoding pipeline goes live. Dubai transitions from loops to live feeds. Scene library expands. Second venue opens. Network effects begin.</p>
+      <div class="roadmap-tasks">
+        <div class="roadmap-task">City 2 camera rig installation</div>
+        <div class="roadmap-task">Live encoding pipeline</div>
+        <div class="roadmap-task">CDN delivery live</div>
+        <div class="roadmap-task">Venue 2 opens</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROTOTYPE SOURCING ── -->
+<section id="sourcing">
+  <p class="section-label reveal">// prototype_sourcing</p>
+  <h2 class="section-heading reveal rd1">What to source<br><em>for the first physical mock-up.</em></h2>
+  <p class="section-intro reveal rd2">The immediate sourcing goal is not to buy a complete venue. It is to prove one destination booth at full quality and use that prototype to lock the design, hardware architecture and cost model.</p>
+  <div class="sourcing-grid">
+    <div class="sourcing-card reveal"><h3>Architectural Display</h3><p>Fine-pitch LED, curved or corner-capable modules, service access, heat management and colour performance strong enough for dark hospitality interiors. The screen must read as a window, not a television.</p></div>
+    <div class="sourcing-card reveal rd1"><h3>Integrated Booth</h3><p>Custom seating, concealed lighting, acoustic treatment, ventilation and millwork engineered around the display. Prioritise modular fabrication so one booth system can be adapted across multiple cities.</p></div>
+    <div class="sourcing-card reveal rd2"><h3>Sensory Control</h3><p>Directional audio, dimmable scene lighting, scent delivery and a simple control layer that can switch the full atmosphere together. Prototype reliability matters more than software sophistication.</p></div>
+  </div>
+</section>
+
+<!-- ── OPEN QUESTIONS ── -->
+<section id="open-questions">
+  <p class="section-label reveal">// open_questions.md</p>
+  <h2 class="section-heading reveal rd1">What still<br><em>needs deciding.</em></h2>
+  <p class="section-intro reveal rd2">These are the known unknowns — decisions that need to be made before or during the pilot phase. Logging them here so nothing gets missed.</p>
+
+  <div class="questions-grid">
+    <div class="q-card reveal rd1">
+      <div class="q-priority high">High Priority</div>
+      <div class="q-text">Which booking platform? SevenRooms vs ResDiary vs custom.</div>
+      <div class="q-context">Affects integration timeline and cost significantly. SevenRooms has better API docs but higher per-venue cost. Decision needed before Month 2.</div>
+    </div>
+    <div class="q-card reveal rd2">
+      <div class="q-priority high">High Priority</div>
+      <div class="q-text">Passport app: native vs React Native vs web app for v1?</div>
+      <div class="q-context">Native gives best NFC integration. React Native is faster to build. Web app (PWA) is fastest and cheapest for Phase 1 MVP. Recommendation: PWA for pilot, native for Phase 2.</div>
+    </div>
+    <div class="q-card reveal rd1">
+      <div class="q-priority medium">Medium Priority</div>
+      <div class="q-text">How many cities in the initial 4K loop production run?</div>
+      <div class="q-context">10 cities (pilot booths only) vs 16–18 cities (first rotation ready at launch). Cost difference is significant but rotation from day 1 is a strong retention story.</div>
+    </div>
+    <div class="q-card reveal rd2">
+      <div class="q-priority medium">Medium Priority</div>
+      <div class="q-text">Scent vendor: Prolitec vs Aromatec vs custom manufacturer?</div>
+      <div class="q-context">Prolitec has the widest commercial install base. Aromatec allows fully custom cartridge formulation. Custom manufacturer is cheapest at scale. Pilot can use Prolitec, then switch at scale.</div>
+    </div>
+    <div class="q-card reveal rd1">
+      <div class="q-priority low">Lower Priority</div>
+      <div class="q-text">Phase 2 camera rig: who owns and maintains the equipment at partner cities?</div>
+      <div class="q-context">Sunsets-owned (higher capex, full control) vs partner-hosted (lower cost, reliability risk) vs third-party camera rental (most flexible). Needs to be in the partnership agreement template.</div>
+    </div>
+    <div class="q-card reveal rd2">
+      <div class="q-priority low">Lower Priority</div>
+      <div class="q-text">What is the fallback experience when a live feed drops?</div>
+      <div class="q-context">Auto-switch to loop of same city (seamless, invisible to guest) vs a "technical pause" notification vs a full system alert. Recommendation: silent auto-fallback to loop. Guest never knows.</div>
+    </div>
+  </div>
+</section>
+
+<section class="tech-closing">
+  <h2>IT’S ALWAYS SUNSET SOMEWHERE.</h2>
+  <p>“Always sunset somewhere” — a premium rooftop experience where guests choose their skyline, not their table. The technology exists to make that promise feel effortless: rich, reliable, synchronized and invisible to the guest.</p>
+</section>
+<footer>
+  <a href="index.html" class="footer-logo">Sunsets</a>
+  <div class="footer-nav">
+    <a href="sunsets.html">Experience</a>
+    <a href="index.html">Pitch</a>
+    <a href="investors.html">Investors</a>
+    <a href="technology.html">Technology</a>
+  </div>
+  <div class="footer-meta">
+    v1.5 · September 2026<br>
+    <span style="color:rgba(244,237,214,0.22);">Confidential</span>
+  </div>
+</footer>
+
+<script>
+  const progressBar = document.getElementById('progressBar');
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+    progressBar.style.width = pct + '%';
+  }, { passive: true });
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

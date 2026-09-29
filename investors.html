@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>SUNSETS — Investors</title>
+<meta name="description" content="Sunsets internal investor working model and planning assumptions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C8872A;
+  --gold-light: #F0B84A;
+  --cream: #F4EDD6;
+  --charcoal: #0E0C0A;
+  --dark: #141210;
+  --mid: #1E1A16;
+  --deep: #0A0806;
+  --dim: rgba(244,237,214,0.42);
+  --mid-text: rgba(244,237,214,0.72);
+  --green: #5CA86A;
+  --blue: #4A80B4;
+  --orange: #E8781A;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--charcoal); color: var(--cream); font-family: 'Montserrat', sans-serif; font-weight: 300; overflow-x: hidden; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--gold); }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 56px;
+  background: rgba(10,8,6,0.96);
+  border-bottom: 1px solid rgba(200,135,42,0.12);
+}
+.nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); text-decoration: none; }
+.nav-right { display: flex; align-items: center; gap: 32px; }
+.nav-links { display: flex; gap: 24px; list-style: none; }
+.nav-links a { font-size:12px; letter-spacing: 3px; text-transform: uppercase; color: var(--dim); text-decoration: none; transition: color 0.3s; }
+.nav-links a:hover { color: var(--gold); }
+.nav-back { font-size:12px; letter-spacing: 3px; text-transform: uppercase; color: rgba(200,135,42,0.4); text-decoration: none; transition: color 0.3s; border-left: 1px solid rgba(200,135,42,0.18); padding-left: 24px; }
+.nav-back:hover { color: var(--gold); }
+
+/* ── PROGRESS ── */
+.progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--orange), var(--gold)); z-index: 200; width: 0%; transition: width 0.2s; }
+
+/* ── SECTION BASE ── */
+section { padding: 8rem 6rem; position: relative; overflow: hidden; }
+.section-label { font-size:0.75rem; letter-spacing: 0.42em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+.section-heading { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem, 5vw, 4.5rem); font-weight: 300; line-height: 1.08; color: var(--cream); margin-bottom: 1rem; }
+.section-heading em { font-style: italic; color: var(--gold-light); }
+.section-sub { font-size:0.75rem; color: var(--dim); letter-spacing: 0.18em; text-transform: uppercase; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 55vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 6rem 6rem;
+  background: linear-gradient(160deg, #0A0806 0%, #16100A 60%, #0A0806 100%);
+  border-bottom: 1px solid rgba(200,135,42,0.15);
+  position: relative;
+}
+#hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 20% 80%, rgba(200,135,42,0.06) 0%, transparent 55%);
+}
+.hero-inner { position: relative; z-index: 2; padding-top: 8rem; }
+.hero-tag { font-size:0.75rem; letter-spacing: 0.45em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.8rem; }
+.hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 8vw, 7.5rem); font-weight: 300; line-height: 0.92; color: var(--cream); margin-bottom: 1.5rem; }
+.hero-title em { font-style: italic; color: var(--gold-light); }
+.hero-body { font-size: 0.82rem; line-height: 2; color: var(--mid-text); max-width: 580px; margin-bottom: 3rem; }
+.confidential-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid rgba(200,135,42,0.25);
+  font-size:0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.confidential-badge::before { content: ''; display: block; width: 6px; height: 6px; background: var(--gold); border-radius: 50%; }
+
+/* ── OPPORTUNITY THESIS ── */
+#thesis { background: var(--dark); }
+.thesis-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(200,135,42,0.1); margin-top: 3.5rem; }
+.thesis-card { background: var(--dark); padding: 2.8rem 2.2rem; transition: background 0.3s; }
+.thesis-card:hover { background: var(--mid); }
+.thesis-icon { font-size: 1.5rem; margin-bottom: 1.2rem; }
+.thesis-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--cream); margin-bottom: 0.7rem; line-height: 1.2; }
+.thesis-body { font-size: 0.75rem; line-height: 1.9; color: var(--mid-text); }
+
+/* ── MARKET SIZE ── */
+#market { background: var(--charcoal); }
+.market-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; margin-top: 3.5rem; }
+.market-funnel { display: flex; flex-direction: column; gap: 2px; }
+.funnel-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.8rem 2rem;
+  background: var(--dark);
+  border-left: 3px solid;
+  transition: background 0.3s;
+}
+.funnel-row:hover { background: var(--mid); }
+.fr-1 { border-color: rgba(200,135,42,0.4); }
+.fr-2 { border-color: rgba(200,135,42,0.6); }
+.fr-3 { border-color: var(--gold); }
+.funnel-val { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--gold-light); font-weight: 300; flex-shrink: 0; min-width: 6rem; }
+.funnel-label { font-size: 0.78rem; color: var(--cream); margin-bottom: 0.25rem; }
+.funnel-detail { font-size:0.75rem; color: var(--dim); line-height: 1.6; }
+
+.market-right { }
+.market-context-heading { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; color: var(--cream); margin-bottom: 1.5rem; }
+.market-context-body { font-size: 0.78rem; line-height: 2; color: var(--mid-text); margin-bottom: 2rem; }
+.trend-list { display: flex; flex-direction: column; gap: 0; }
+.trend-item { padding: 1.1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 1rem; align-items: flex-start; }
+.trend-bullet { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+.trend-text { font-size: 0.75rem; color: var(--mid-text); line-height: 1.7; }
+.trend-text strong { color: var(--gold-light); font-weight: 400; }
+
+/* ── COMPARABLES ── */
+#comps { background: var(--dark); }
+.comps-table { margin-top: 3rem; border: 1px solid rgba(200,135,42,0.12); overflow: hidden; }
+.comps-head { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1.2fr; background: rgba(200,135,42,0.08); padding: 0.9rem 1.5rem; }
+.comps-head span { font-size:0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
+.comp-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1.2fr; padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.04); transition: background 0.3s; }
+.comp-row:hover { background: rgba(200,135,42,0.04); }
+.comp-row span { font-size: 0.78rem; color: var(--mid-text); display: flex; align-items: center; }
+.comp-row .name { font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--cream); }
+.comp-row .val { color: var(--gold-light); font-family: 'Cormorant Garamond', serif; font-size: 1rem; }
+.comp-row .highlight-row { background: rgba(200,135,42,0.05); }
+.sunset-row { background: rgba(200,135,42,0.06) !important; }
+.sunset-row span { color: var(--cream) !important; }
+.sunset-row .name { color: var(--gold-light) !important; font-size: 1.1rem !important; }
+.comps-note { padding: 1rem 1.5rem; font-size:0.75rem; color: var(--dim); font-style: italic; border-top: 1px solid rgba(200,135,42,0.1); }
+
+/* ── FINANCIALS ── */
+#financials { background: var(--charcoal); }
+#financials::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+
+.fin-header { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end; margin-bottom: 4rem; }
+.fin-intro { font-size: 0.8rem; line-height: 2; color: var(--mid-text); }
+
+.fin-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(200,135,42,0.1); margin-bottom: 4rem; }
+.fin-metric { background: var(--dark); padding: 2.2rem 2rem; text-align: center; transition: background 0.3s; }
+.fin-metric:hover { background: var(--mid); }
+.fin-val { font-family: 'Cormorant Garamond', serif; font-size: 2.6rem; font-weight: 300; color: var(--gold-light); line-height: 1; margin-bottom: 0.4rem; }
+.fin-label { font-size:0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--cream); margin-bottom: 0.4rem; }
+.fin-note { font-size:0.75rem; color: var(--dim); line-height: 1.6; }
+
+.proj-table { margin-bottom: 3rem; }
+.proj-head { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); padding: 0.8rem 1.5rem; background: rgba(200,135,42,0.08); }
+.proj-head span { font-size:0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
+.proj-row { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); padding: 1.3rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); transition: background 0.3s; }
+.proj-row:hover { background: rgba(200,135,42,0.04); }
+.proj-row span { font-size: 0.78rem; color: var(--mid-text); }
+.proj-row .proj-label { color: var(--cream); }
+.proj-row .proj-val { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; color: var(--gold-light); }
+.proj-row-total { background: rgba(200,135,42,0.07) !important; }
+.proj-row-total span { color: var(--cream) !important; font-family: 'Cormorant Garamond', serif; font-size: 1rem !important; }
+.proj-row-total .proj-label { color: var(--gold-light) !important; }
+
+.margins-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(200,135,42,0.1); margin-bottom: 3rem; }
+.margin-card { background: var(--dark); padding: 1.8rem 1.5rem; }
+.margin-pct { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--green); line-height: 1; margin-bottom: 0.4rem; }
+.margin-label { font-size:0.75rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--cream); margin-bottom: 0.3rem; }
+.margin-note { font-size:0.75rem; color: var(--dim); line-height: 1.6; }
+
+/* ── USE OF FUNDS ── */
+#use-of-funds { background: var(--dark); }
+.funds-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; margin-top: 3.5rem; align-items: start; }
+.funds-bars { display: flex; flex-direction: column; gap: 0; }
+.fund-row { padding: 1.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.fund-row-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.8rem; }
+.fund-name { font-size: 0.78rem; color: var(--cream); }
+.fund-pct { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--gold-light); }
+.fund-bar-track { height: 3px; background: rgba(200,135,42,0.12); position: relative; }
+.fund-bar-fill { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(to right, var(--gold), var(--gold-light)); transition: width 1.2s ease; width: 0%; }
+.fund-detail { font-size:0.75rem; color: var(--dim); margin-top: 0.5rem; line-height: 1.6; }
+
+.funds-right { }
+.investment-heading { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300; color: var(--cream); margin-bottom: 1.2rem; }
+.investment-heading em { font-style: italic; color: var(--gold-light); }
+.investment-body { font-size: 0.78rem; line-height: 2; color: var(--mid-text); margin-bottom: 2rem; }
+.return-scenarios { display: flex; flex-direction: column; gap: 1px; }
+.scenario { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem; background: rgba(200,135,42,0.05); border: 1px solid rgba(200,135,42,0.1); transition: border-color 0.3s; }
+.scenario:hover { border-color: rgba(200,135,42,0.3); }
+.scenario-label { font-size:0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--dim); width: 6rem; flex-shrink: 0; }
+.scenario-mult { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--gold-light); flex-shrink: 0; width: 4rem; }
+.scenario-detail { font-size:0.75rem; color: var(--mid-text); line-height: 1.7; }
+
+/* ── WHY NOW ── */
+#why-now { background: var(--charcoal); }
+.why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(200,135,42,0.1); margin-top: 3rem; }
+.why-card { background: var(--charcoal); padding: 2.8rem 2.4rem; position: relative; overflow: hidden; transition: background 0.3s; }
+.why-card:hover { background: var(--dark); }
+.why-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--orange), var(--gold)); opacity: 0; transition: opacity 0.3s; }
+.why-card:hover::after { opacity: 1; }
+.why-num { font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: rgba(200,135,42,0.1); position: absolute; top: 1rem; right: 1.5rem; line-height: 1; }
+.why-title { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--cream); margin-bottom: 0.7rem; }
+.why-body { font-size: 0.75rem; line-height: 1.9; color: var(--mid-text); }
+.why-body strong { color: var(--gold-light); font-weight: 400; }
+
+/* ── CONTACT ── */
+#contact {
+  background: var(--deep);
+  text-align: center;
+  padding: 8rem 6rem;
+  position: relative;
+  overflow: hidden;
+}
+#contact::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+.contact-heading { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 300; color: var(--cream); margin-bottom: 1.2rem; }
+.contact-heading em { font-style: italic; color: var(--gold-light); }
+.contact-body { font-size: 0.8rem; line-height: 2; color: var(--mid-text); max-width: 520px; margin: 0 auto 3rem; }
+.contact-row { display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap; margin-bottom: 3rem; }
+.contact-item { text-align: center; }
+.contact-label { font-size:0.75rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.4rem; }
+.contact-value { font-size: 0.82rem; color: var(--cream); }
+.btn-row { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; }
+.btn-gold { padding: 0.9rem 2.2rem; background: transparent; border: 1px solid var(--gold); color: var(--gold-light); font-size:0.75rem; letter-spacing: 0.3em; text-transform: uppercase; text-decoration: none; transition: all 0.3s; font-family: 'Montserrat', sans-serif; }
+.btn-gold:hover { background: rgba(200,135,42,0.12); }
+
+/* ── REVEAL ── */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s ease, transform 0.9s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.rd1 { transition-delay: 0.08s; } .rd2 { transition-delay: 0.18s; } .rd3 { transition-delay: 0.3s; } .rd4 { transition-delay: 0.44s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  section { padding: 5rem 1.5rem; }
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  #hero { padding: 0 1.5rem 4rem; }
+  .market-layout,.fin-header,.funds-layout,.thesis-grid,.why-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .fin-metrics { grid-template-columns: 1fr 1fr; }
+  .margins-grid { grid-template-columns: 1fr 1fr; }
+  .comps-head,.comp-row { grid-template-columns: 1.5fr 1fr 1fr; }
+  .comps-head span:nth-child(4),.comps-head span:nth-child(5),
+  .comp-row span:nth-child(4),.comp-row span:nth-child(5) { display: none; }
+  .proj-head,.proj-row { grid-template-columns: 1.5fr 1fr 1fr; }
+  .proj-head span:nth-child(4),.proj-head span:nth-child(5),
+  .proj-row span:nth-child(4),.proj-row span:nth-child(5) { display: none; }
+  .contact-row { gap: 2rem; }
+}
+
+/* ===== SUNSETS BRAND SYSTEM v1.4 ===== */
+@font-face{font-family:'POINA';src:url('assets/fonts/POINA.woff2') format('woff2'),url('assets/fonts/POINA.woff') format('woff'),local('POINA'),local('Poina'),local('Poina-Regular');font-weight:400;font-style:normal;font-display:swap}
+:root{--gold:#D78E4F!important;--gold-light:#F0BA83!important;--cream:#EEF2F4!important;--charcoal:#07131F!important;--dark:#081522!important;--mid:#0E2132!important;--deep:#050D14!important;--dim:rgba(238,242,244,.48)!important;--mid-text:rgba(238,242,244,.72)!important;--blue:#648AA7!important;--orange:#BD6D63!important}
+html{font-size:16px!important}
+body{font-family:'Montserrat',sans-serif!important;font-size:14px!important;background:#07131F!important;color:#EEF2F4!important}
+body *{font-style:normal!important}
+.hero-title,.section-heading,.investment-heading,.contact-heading,.thesis-title,.market-context-heading,.funnel-val,.fin-val,.scenario-mult,.nav-logo,.footer-logo,.phase-badge-title,.system-name,.roadmap-title{font-family:'POINA','Montserrat',sans-serif!important;text-transform:uppercase!important;font-style:normal!important;font-feature-settings:'liga' 1,'calt' 1,'ss01' 1!important;letter-spacing:.045em!important}
+nav{height:74px!important;padding:0 clamp(20px,4vw,64px)!important;background:rgba(7,19,31,.96)!important;backdrop-filter:blur(16px)!important;border-bottom:1px solid rgba(238,242,244,.08)!important}
+.nav-logo{font-size:22px!important;letter-spacing:.12em!important;color:#EEF2F4!important;white-space:nowrap!important}
+.nav-right{gap:28px!important}.nav-links{gap:24px!important}.nav-links a,.nav-back{font-family:'Montserrat',sans-serif!important;font-size:12px!important;letter-spacing:.16em!important;color:rgba(238,242,244,.58)!important}.nav-links a:hover,.nav-back:hover{color:#F0BA83!important}
+.hero-tag,.section-label,.confidential-badge,.legend-label,.stack-col-head,.status,.roadmap-phase,.q-priority,.contact-label,.footer-nav a,.footer-meta{font-size:12px!important}
+.hero-body,.section-intro,.thesis-body,.market-context-body,.trend-text,.fin-intro,.fund-detail,.investment-body,.scenario-detail,.why-body,.contact-body,.system-desc,.roadmap-desc,.q-context,.gap-note{font-size:14px!important;line-height:1.85!important}
+.hero-title em,.section-heading em,.investment-heading em,.contact-heading em{color:#F0BA83!important;font-style:normal!important}
+.progress-bar{background:linear-gradient(90deg,#648AA7,#D78E4F,#F0BA83)!important}
+.btn-gold{font-size:12px!important;border-color:#D78E4F!important;color:#F0BA83!important}.btn-gold:hover{background:rgba(216,132,58,.12)!important}
+@media(max-width:900px){nav{height:auto!important;min-height:66px!important}.nav-right{gap:14px!important}.nav-links{display:none!important}.nav-back{font-size:12px!important}}
+
+
+/* v3.1 investor visual normalization */
+:root{
+  --gold:#D28A50!important;--gold-light:#E9B77E!important;--cream:#EEF1F3!important;
+  --charcoal:#07131F!important;--dark:#0B1B29!important;--mid:#112638!important;--deep:#050C13!important;
+  --dim:rgba(238,241,243,.56)!important;--mid-text:rgba(238,241,243,.82)!important;--blue:#6E91AA!important;--orange:#A85F58!important;
+}
+body{background:#07131F!important;color:#EEF1F3!important}
+.hero-title,.section-heading,.investment-heading,.contact-heading{font-weight:400!important}
+.hero-title em,.section-heading em,.investment-heading em,.contact-heading em{color:#D28A50!important;font-style:normal!important}
+.hero-body,.section-intro,.thesis-body,.market-context-body,.trend-text,.fin-intro,.fund-detail,.investment-body,.scenario-detail,.why-body,.contact-body{color:#EEF1F3!important}
+.thesis-card,.trend-card,.financial-card,.fund-card,.scenario-card,.why-card{background:rgba(210,138,80,.07)!important;border-color:rgba(210,138,80,.16)!important}
+.thesis-title,.fin-label,.fund-title,.scenario-title,.why-title{color:#E9B77E!important}
+.progress-bar{background:linear-gradient(90deg,#6E91AA,#D28A50,#E9B77E)!important;opacity:1!important}
+.investor-closing{padding:90px 6rem;background:linear-gradient(180deg,#0B1B29,#07131F);border-top:1px solid rgba(210,138,80,.14)}
+.investor-closing h2{font-family:'POINA','Montserrat',sans-serif;font-size:clamp(2.4rem,5vw,5rem);line-height:.96;font-weight:400;color:#D28A50;margin:0 0 1.2rem;text-transform:uppercase}
+.investor-closing p{max-width:760px;color:#EEF1F3;line-height:1.9;font-size:.9rem}
+@media(max-width:760px){.investor-closing{padding:72px 24px}}
+
+</style>
+<link rel="stylesheet" href="brand.css">
+<style>
+:root{
+  --gold:#D28A50!important;--gold-light:#E9B77E!important;--amber:#D28A50!important;
+  --cream:#EEF1F3!important;--charcoal:#07131F!important;--dark:#07131F!important;
+  --mid:#0B1B29!important;--deep:#040B11!important;--blue:#6E91AA!important;
+  --orange:#A85F58!important;--dim:rgba(238,241,243,.48)!important;--mid-text:rgba(238,241,243,.72)!important;
+}
+html{background:#07131F!important}
+body{background:#07131F!important;color:#EEF1F3!important;font-family:'Montserrat',sans-serif!important}
+body *{font-style:normal!important}
+.hero-title,.section-heading,.investment-heading,.contact-heading,.thesis-title,.market-context-heading,.funnel-val,.fin-val,.scenario-mult,.nav-logo,.footer-logo,.phase-badge-title,.system-name,.roadmap-title{
+  font-family:'POINA','Montserrat',sans-serif!important;text-transform:uppercase!important;letter-spacing:.045em!important;
+  font-feature-settings:'liga' 1,'calt' 1,'ss01' 1!important;
+}
+nav{background:rgba(7,19,31,.92)!important;backdrop-filter:blur(14px)!important;border-bottom:1px solid rgba(238,241,243,.09)!important}
+.nav-logo{color:#EEF1F3!important}
+.nav-links a,.nav-back{color:rgba(238,241,243,.62)!important;font-size:12px!important}
+.nav-links a:hover,.nav-back:hover{color:#E9B77E!important}
+.hero-title em,.section-heading em,.investment-heading em,.contact-heading em{color:#E9B77E!important;font-style:normal!important}
+.progress-bar{background:linear-gradient(90deg,#6E91AA,#D28A50,#E9B77E)!important}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">SUNSETS</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="index.html">Experience</a></li>
+      <li><a href="concept.html">Concept</a></li>
+      <li><a href="technology.html">Technology</a></li>
+      <li><a href="investors.html">Investors</a></li>
+    </ul>
+    <a href="index.html" class="nav-back">Main Site</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-inner">
+    <p class="hero-tag">Investor Working Model · Confidential · September 2026</p>
+    <h1 class="hero-title">The case<br>for <em>SUNSETS.</em></h1>
+    <p class="hero-body">
+      A working commercial model for a premium rooftop hospitality network. The figures below are planning assumptions for pilot design and partner conversations, not audited forecasts. The strategic premise is that each successful venue adds content, reach and brand value to the wider network.
+    </p>
+    <div class="confidential-badge">Strictly confidential — not for distribution — property of Sunsets · Studio NSQ</div>
+  </div>
+</section>
+
+<!-- ── INVESTMENT THESIS ── -->
+<section id="thesis">
+  <p class="section-label reveal">Investment Thesis</p>
+  <h2 class="section-heading reveal rd1">Three reasons<br>this <em>works.</em></h2>
+  <div class="thesis-grid">
+    <div class="thesis-card reveal rd1">
+      <div class="thesis-icon">🔒</div>
+      <div class="thesis-title">The Network Is the Moat</div>
+      <p class="thesis-body">Every new Sunsets venue feeds live content to every other. A competitor can copy the concept, but they cannot copy the network. As venues multiply, the live-feed library becomes a proprietary, compounding asset that grows more valuable with every location added.</p>
+    </div>
+    <div class="thesis-card reveal rd2">
+      <div class="thesis-icon">🌅</div>
+      <div class="thesis-title">The Experience Is Unmatchable</div>
+      <p class="thesis-body">Sunsets combines 4K visual immersion, directional soundscapes, scent diffusion, themed cocktails, and private group booking into one seamless product. No single element is revolutionary — but the combination is. The category doesn't exist yet. That's the opportunity.</p>
+    </div>
+    <div class="thesis-card reveal rd3">
+      <div class="thesis-icon">📈</div>
+      <div class="thesis-title">The Model Scales Without Proportional Cost</div>
+      <p class="thesis-body">Hotel partnerships mean Sunsets doesn’t own or operate rooftops — it licenses the IP and system. Each licensing deal generates upfront fees plus revenue share. Capex stays low. Margin expands as the network grows. It is hospitality as a software business.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── MARKET SIZE ── -->
+<section id="market">
+  <p class="section-label reveal">Market Opportunity</p>
+  <h2 class="section-heading reveal rd1">A large market.<br><em>Underserved.</em></h2>
+  <div class="market-layout">
+    <div>
+      <div class="market-funnel">
+        <div class="funnel-row fr-1 reveal rd1">
+          <div class="funnel-val">$115B</div>
+          <div>
+            <div class="funnel-label">Global Luxury Hotel Market</div>
+            <div class="funnel-detail">Growing at 6.5% CAGR through 2030. Premium F&B is a significant and growing revenue driver for luxury hotel operators.</div>
+          </div>
+        </div>
+        <div class="funnel-row fr-2 reveal rd2">
+          <div class="funnel-val">$32B</div>
+          <div>
+            <div class="funnel-label">Premium Experiential F&B</div>
+            <div class="funnel-detail">Rooftop bars, immersive dining, and group experience venues. Growing at 9% CAGR. Post-pandemic experience economy tailwind driving demand.</div>
+          </div>
+        </div>
+        <div class="funnel-row fr-3 reveal rd3">
+          <div class="funnel-val">$4.2B</div>
+          <div>
+            <div class="funnel-label">Sunsets’ Addressable Market</div>
+            <div class="funnel-detail">Premium rooftop concepts in Tier-1 global cities, targeting high-net-worth group bookings, corporate events, and affluent experiential consumers.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal rd2">
+      <h3 class="market-context-heading">Why now is the right moment</h3>
+      <p class="market-context-body">Three macro trends have converged to make Sunsets viable and timely. The technology is ready. The consumer appetite has peaked. The hotel sector is desperate for differentiation.</p>
+      <div class="trend-list">
+        <div class="trend-item"><div class="trend-bullet"></div><div class="trend-text"><strong>Experience economy surge:</strong> Post-pandemic, consumer spend on experiences over goods has hit record highs. Memorable moments command premium pricing.</div></div>
+        <div class="trend-item"><div class="trend-bullet"></div><div class="trend-text"><strong>4K streaming is now viable:</strong> Latency, bandwidth, and hardware costs have reached the point where high-quality live feeds are commercially deployable in hospitality settings.</div></div>
+        <div class="trend-item"><div class="trend-bullet"></div><div class="trend-text"><strong>Hotels need differentiation:</strong> Post-COVID, every major hotel chain is looking for F&B concepts that drive non-guest traffic and fill off-peak capacity.</div></div>
+        <div class="trend-item"><div class="trend-bullet"></div><div class="trend-text"><strong>Social media as free marketing:</strong> TikTok and Instagram virality are built into the product. Every booth is a content creation moment. Organic reach replaces paid acquisition.</div></div>
+        <div class="trend-item"><div class="trend-bullet"></div><div class="trend-text"><strong>Dubai as global launchpad:</strong> UAE's tourism growth, high F&B spend per visitor, and international media visibility make it the ideal proof-of-concept market.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMPARABLES ── -->
+<section id="comps">
+  <p class="section-label reveal">Comparable Analysis</p>
+  <h2 class="section-heading reveal rd1">Proven models.<br><em>Larger opportunity.</em></h2>
+  <div class="comps-table reveal rd2">
+    <div class="comps-head">
+      <span>Concept</span>
+      <span>Model</span>
+      <span>Locations</span>
+      <span>Revenue / Venue</span>
+      <span>Key Differentiator</span>
+    </div>
+    <div class="comp-row">
+      <span class="name">Nobu</span>
+      <span>Licensing / JV</span>
+      <span>50+ cities</span>
+      <span class="val">$8M–$20M</span>
+      <span>Celebrity chef brand</span>
+    </div>
+    <div class="comp-row">
+      <span class="name">Sketch London</span>
+      <span>Standalone</span>
+      <span>1 venue</span>
+      <span class="val">£20M+/yr</span>
+      <span>Immersive art dining</span>
+    </div>
+    <div class="comp-row">
+      <span class="name">Eataly</span>
+      <span>Licensing</span>
+      <span>40+ cities</span>
+      <span class="val">$15M–$30M</span>
+      <span>Italian food concept</span>
+    </div>
+    <div class="comp-row">
+      <span class="name">Meow Wolf</span>
+      <span>Owned + Licensed</span>
+      <span>4 venues</span>
+      <span class="val">$12M–$25M</span>
+      <span>Immersive art experience</span>
+    </div>
+    <div class="comp-row">
+      <span class="name">The Ivy Group</span>
+      <span>Franchised</span>
+      <span>80+ venues</span>
+      <span class="val">$3M–$8M</span>
+      <span>Heritage restaurant brand</span>
+    </div>
+    <div class="comp-row sunset-row">
+      <span class="name">Sunsets ★</span>
+      <span>Licensing / JV</span>
+      <span>1 → 20+ (4yr)</span>
+      <span class="val">$1.8M–$2.5M</span>
+      <span>Network-effect experience brand</span>
+    </div>
+    <div class="comps-note">Sunsets Year 1 figures are conservative pilot projections. Network revenue at 10 cities (Year 4): $18M–$25M system-wide. Unlike standalone concepts, each Sunsets venue can contribute content and audience value to the wider network.</div>
+  </div>
+</section>
+
+<!-- ── FINANCIALS ── -->
+<section id="financials">
+  <p class="section-label reveal">Financial Projections</p>
+  <h2 class="section-heading reveal rd1">The numbers.<br><em>Stress-tested.</em></h2>
+
+  <div class="fin-header">
+    <div class="reveal rd1">
+      <p class="fin-intro">The figures on this page are internal planning assumptions intended to test whether the concept can support a scalable operating model. They must be revalidated against an actual site, partner commercial terms, fit-out budget, seating capacity and observed pilot demand before being used for fundraising or contractual decisions.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <div class="fin-metrics">
+    <div class="fin-metric reveal rd1"><div class="fin-val">$2.1M</div><div class="fin-label">Year 1 Revenue</div><div class="fin-note">Dubai pilot · midpoint of $1.8M–$2.5M range</div></div>
+    <div class="fin-metric reveal rd2"><div class="fin-val">65%</div><div class="fin-label">Operator Net Share</div><div class="fin-note">After venue costs & hotel revenue share</div></div>
+    <div class="fin-metric reveal rd3"><div class="fin-val">$1.4M</div><div class="fin-label">Year 1 Net to Concept</div><div class="fin-note">Plus $75K–$150K upfront licensing fee</div></div>
+    <div class="fin-metric reveal rd1"><div class="fin-val">40%+</div><div class="fin-label">Cocktail Margin</div><div class="fin-note">Premium cocktail program · primary revenue driver</div></div>
+    <div class="fin-metric reveal rd2"><div class="fin-val">+22%</div><div class="fin-label">Event Revenue Uplift</div><div class="fin-note">Full-booth private events fill non-peak hours</div></div>
+    <div class="fin-metric reveal rd3"><div class="fin-val">$22M</div><div class="fin-label">Year 4 Network Revenue</div><div class="fin-note">10 venues · system-wide · conservative model</div></div>
+  </div>
+
+  <div class="proj-table reveal rd2">
+    <div class="proj-head">
+      <span>Metric</span>
+      <span>Year 1</span>
+      <span>Year 2</span>
+      <span>Year 3</span>
+      <span>Year 4</span>
+    </div>
+    <div class="proj-row"><span class="proj-label">Venues (cumulative)</span><span>1</span><span>2–3</span><span>5–7</span><span>10+</span></div>
+    <div class="proj-row"><span class="proj-label">System Revenue</span><span class="proj-val">$2.1M</span><span class="proj-val">$4–6M</span><span class="proj-val">$10–14M</span><span class="proj-val">$18–25M</span></div>
+    <div class="proj-row"><span class="proj-label">Licensing Fees</span><span class="proj-val">$125K</span><span class="proj-val">$250–400K</span><span class="proj-val">$600K–1M</span><span class="proj-val">$1.2–2M</span></div>
+    <div class="proj-row"><span class="proj-label">Event Revenue (% total)</span><span>—</span><span>12%</span><span>18%</span><span>22%</span></div>
+    <div class="proj-row proj-row-total"><span class="proj-label">Concept Owner Revenue</span><span class="proj-val">$1.4M</span><span class="proj-val">$2.8–4M</span><span class="proj-val">$6.5–9M</span><span class="proj-val">$12–16M</span></div>
+  </div>
+
+  <div class="margins-grid reveal rd3">
+    <div class="margin-card"><div class="margin-pct">40%+</div><div class="margin-label">Cocktail Margin</div><div class="margin-note">Premium spirits, low pour cost, high ticket price per niche</div></div>
+    <div class="margin-card"><div class="margin-pct">65%</div><div class="margin-label">Operator Net Share</div><div class="margin-note">After venue costs, staffing, and hotel revenue share</div></div>
+    <div class="margin-card"><div class="margin-pct">85%</div><div class="margin-label">Licensing Margin</div><div class="margin-note">Licensing revenue is near-pure margin — IP and standards only</div></div>
+    <div class="margin-card"><div class="margin-pct">72%</div><div class="margin-label">Event Booking Margin</div><div class="margin-note">Flat-fee event bookings with F&B minimum — minimal incremental cost</div></div>
+  </div>
+</section>
+
+<!-- ── USE OF FUNDS ── -->
+<section id="use-of-funds">
+  <p class="section-label reveal">Investment Structure</p>
+  <h2 class="section-heading reveal rd1">Where the<br><em>capital goes.</em></h2>
+  <div class="funds-layout">
+    <div class="reveal rd1">
+      <div class="funds-bars">
+        <div class="fund-row">
+          <div class="fund-row-header"><span class="fund-name">Pilot Venue Build-out — Dubai</span><span class="fund-pct">40%</span></div>
+          <div class="fund-bar-track"><div class="fund-bar-fill" data-width="40"></div></div>
+          <div class="fund-detail">LED screen installation, booth theming, scent systems, audio, lighting. Hotel provides the rooftop shell — Sunsets builds the experience layer.</div>
+        </div>
+        <div class="fund-row">
+          <div class="fund-row-header"><span class="fund-name">Technology — Streaming & CMS</span><span class="fund-pct">30%</span></div>
+          <div class="fund-bar-track"><div class="fund-bar-fill" data-width="30"></div></div>
+          <div class="fund-detail">Content production (24+ city library), streaming pipeline, scene management dashboard, booking system integration.</div>
+        </div>
+        <div class="fund-row">
+          <div class="fund-row-header"><span class="fund-name">Brand, Marketing & Launch</span><span class="fund-pct">20%</span></div>
+          <div class="fund-bar-track"><div class="fund-bar-fill" data-width="20"></div></div>
+          <div class="fund-detail">Influencer launch campaign, brand design system, photography, opening PR. Built for organic viral spread.</div>
+        </div>
+        <div class="fund-row">
+          <div class="fund-row-header"><span class="fund-name">Legal, IP & Advisory</span><span class="fund-pct">10%</span></div>
+          <div class="fund-bar-track"><div class="fund-bar-fill" data-width="10"></div></div>
+          <div class="fund-detail">Trademark registration, partnership agreements, IP protection across target markets, UAE entity setup.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="funds-right reveal rd2">
+      <h3 class="investment-heading">Return<br><em>scenarios.</em></h3>
+      <p class="investment-body">Based on comparable hospitality brand exits and licensing businesses. Returns modelled at Year 4 (10-venue network) with conservative and base case assumptions.</p>
+      <div class="return-scenarios">
+        <div class="scenario">
+          <span class="scenario-label">Conservative</span>
+          <span class="scenario-mult">4–6×</span>
+          <span class="scenario-detail">5 venues operating, licensing revenue established, brand equity proven</span>
+        </div>
+        <div class="scenario">
+          <span class="scenario-label">Base Case</span>
+          <span class="scenario-mult">8–12×</span>
+          <span class="scenario-detail">10-venue network, full scene library, $18–22M system revenue, strategic acquisition interest</span>
+        </div>
+        <div class="scenario">
+          <span class="scenario-label">Bull Case</span>
+          <span class="scenario-mult">15–25×</span>
+          <span class="scenario-detail">Global brand with 20+ venues, proprietary tech platform licensing, strategic exit to major hotel group or IPO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY NOW ── -->
+<section id="why-now">
+  <p class="section-label reveal">Why Now</p>
+  <h2 class="section-heading reveal rd1">The window<br>is <em>open.</em></h2>
+  <div class="why-grid">
+    <div class="why-card reveal rd1">
+      <div class="why-num">01</div>
+      <div class="why-title">First-mover advantage is available</div>
+      <p class="why-body">No equivalent concept exists anywhere in the world. The category is open. Every month of delay is a month a better-funded competitor could enter. <strong>The window is open, not permanent.</strong></p>
+    </div>
+    <div class="why-card reveal rd2">
+      <div class="why-num">02</div>
+      <div class="why-title">Secure the first flagship partner</div>
+      <p class="why-body">The next commercial milestone is a flagship Dubai rooftop partner with the right view, guest profile and willingness to co-develop the pilot. <strong>The venue is part of the product.</strong> Site selection should come before detailed fit-out economics.</p>
+    </div>
+    <div class="why-card reveal rd1">
+      <div class="why-num">03</div>
+      <div class="why-title">IP protection must happen now</div>
+      <p class="why-body">Trademark registration, NDA infrastructure, and legal protection must precede the public pitch. <strong>Every week without protection is a week of vulnerability.</strong> Investment funds the legal layer first.</p>
+    </div>
+    <div class="why-card reveal rd2">
+      <div class="why-num">04</div>
+      <div class="why-title">The tech cost curve has peaked</div>
+      <p class="why-body">4K LED display costs have dropped 60% in five years. Commercial scent diffusion is under $500/unit. <strong>Phase 1 is buildable now at a fraction of what it would have cost in 2020.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <h2 class="contact-heading reveal">Ready to<br><em>discuss?</em></h2>
+  <p class="contact-body reveal rd1">
+    We are looking for the right first investor — someone who understands that the future of hospitality is built on experience, not just accommodation, and who sees the network effect before it's obvious.
+  </p>
+  <div class="contact-row reveal rd2">
+    <div class="contact-item"><div class="contact-label">Stage</div><div class="contact-value">Pre-Seed · Pilot Ready</div></div>
+    <div class="contact-item"><div class="contact-label">Entity</div><div class="contact-value">UAE — UAQ Free Zone</div></div>
+    <div class="contact-item"><div class="contact-label">Hub</div><div class="contact-value">sunsets.studionsq.com</div></div>
+  </div>
+  <div class="btn-row reveal rd3">
+    <a href="index.html" class="btn-gold">Main Site</a>
+    <a href="technology.html" class="btn-gold">Technology Deep Dive</a>
+    <a href="index.html" class="btn-gold">Main Site</a>
+  </div>
+</section>
+
+<script>
+  const progressBar = document.getElementById('progressBar');
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+    progressBar.style.width = pct + '%';
+  }, { passive: true });
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Animate fund bars when visible
+  const barObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.fund-bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  const fundsSection = document.querySelector('.funds-bars');
+  if (fundsSection) barObs.observe(fundsSection);
+</script>
+</body>
+</html>
