@@ -1,0 +1,33 @@
+{
+  "brand": "SUNSETS",
+  "version": "2026.09-final",
+  "tagline": "WHERE EVERY HOUR IS GOLDEN",
+  "philosophy": "It's always sunset somewhere.",
+  "supporting_line": "\"Always sunset somewhere\" — a premium rooftop experience where guests choose their skyline, not their table.",
+  "typography": {
+    "display": "POINA",
+    "display_weight": 400,
+    "body": "Montserrat 300",
+    "rules": "Display typography is thin and elegant; browser synthetic bolding is disabled."
+  },
+  "palette": {
+    "night": "#07131F",
+    "night_2": "#0B1B29",
+    "surface": "#112638",
+    "sky": "#6E91AA",
+    "amber": "#D28A50",
+    "horizon": "#E9B77E",
+    "afterglow": "#A85F58",
+    "text": "#EEF1F3"
+  },
+  "logo": {
+    "direction": "Option 3 — U-horizon sunset wordmark",
+    "primary": "/assets/brand/sunsets-logo-gold.png",
+    "reversed": "/assets/brand/sunsets-logo-white.png",
+    "mark": "/assets/brand/sunsets-mark-gold.png",
+    "favicon": "/assets/brand/favicon-32.png"
+  },
+  "image_treatment": {
+    "principle": "Cinematic but restrained; sunset is the brightest element and UI remains quiet."
+  }
+}
