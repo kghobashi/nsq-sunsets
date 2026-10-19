@@ -31,6 +31,11 @@ const DISPLAY_WEIGHT_FIX = `
   }
 </style>
 `;
+const ANALYTICS_HEAD = `
+<!-- GA4: SUNSETS -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=${"G-GE5L8X270C"}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GE5L8X270C');</script>
+`;
 const BRAND_HEAD = `
 <meta id="sunsets-brand-head" name="theme-color" content="#07131F">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32.png">
@@ -87,6 +92,7 @@ export async function onRequest(context) {
     let html = await response.text();
     const additions =
       (html.includes('id="sunsets-brand-head"') ? "" : BRAND_HEAD) +
+      (html.includes('G-GE5L8X270C') ? "" : ANALYTICS_HEAD) +
       (html.includes('id="sunsets-display-weight-fix"') ? "" : DISPLAY_WEIGHT_FIX);
     if (additions) {
       html = html.includes("</head>")
